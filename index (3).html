@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fine Calculator — Team Compass</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root {
+  --bg: #f0f4ff;
+  --surface: #ffffff;
+  --surface2: #f7f9ff;
+  --border: #e2e8f8;
+  --border2: #d0d8f0;
+  --text: #1a1f36;
+  --muted: #6b7280;
+  --muted2: #9ca3af;
+
+  --indigo: #4f46e5;
+  --indigo-light: #eef2ff;
+  --indigo-mid: #c7d2fe;
+  --violet: #7c3aed;
+  --violet-light: #f5f3ff;
+
+  --rose: #f43f5e;
+  --rose-light: #fff1f2;
+  --green: #10b981;
+  --green-light: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --blue: #3b82f6;
+  --blue-light: #eff6ff;
+  --teal: #14b8a6;
+  --teal-light: #f0fdfa;
+
+  --shadow-sm: 0 1px 3px rgba(79,70,229,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow: 0 4px 16px rgba(79,70,229,0.1), 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 40px rgba(79,70,229,0.15), 0 4px 12px rgba(0,0,0,0.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#a855f7 100%);
+  padding:0 32px;
+  display:flex;align-items:center;gap:0;
+  box-shadow:0 2px 20px rgba(79,70,229,0.3);
+  position:relative;overflow:hidden;
+}
+header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+.header-inner{display:flex;align-items:center;gap:16px;padding:18px 0;width:100%;}
+.logo-mark{background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,0.3);color:#fff;font-size:11px;font-weight:800;letter-spacing:0.15em;text-transform:uppercase;padding:5px 12px;border-radius:6px;}
+.header-divider{width:1px;height:28px;background:rgba(255,255,255,0.25);margin:0 4px;}
+.header-title{color:rgba(255,255,255,0.95);font-size:15px;font-weight:500;}
+.header-title strong{color:#fff;font-weight:700;}
+.header-badge{margin-left:auto;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);color:rgba(255,255,255,0.9);font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;}
+
+.main{max-width:1200px;margin:0 auto;padding:36px 24px;}
+
+/* ── UPLOAD PAGE ── */
+.upload-hero{text-align:center;margin-bottom:36px;}
+.upload-hero h2{font-size:26px;font-weight:800;color:var(--text);margin-bottom:8px;letter-spacing:-0.5px;}
+.upload-hero p{color:var(--muted);font-size:15px;}
+.upload-hero .highlight{color:var(--indigo);font-weight:600;}
+
+.upload-zone{
+  border:2px dashed var(--indigo-mid);border-radius:20px;padding:52px 32px;text-align:center;
+  cursor:pointer;transition:all 0.25s;background:var(--surface);
+  position:relative;box-shadow:var(--shadow-sm);
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--indigo);background:var(--indigo-light);box-shadow:var(--shadow);}
+.upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+.upload-icon-wrap{width:72px;height:72px;background:linear-gradient(135deg,var(--indigo-light),var(--violet-light));border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:32px;box-shadow:0 4px 12px rgba(79,70,229,0.15);}
+.upload-zone h3{font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.upload-zone p{color:var(--muted);font-size:14px;}
+.upload-zone .file-types{display:inline-flex;gap:8px;margin-top:14px;}
+.file-chip{background:var(--indigo-light);color:var(--indigo);font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;font-family:'JetBrains Mono',monospace;border:1px solid var(--indigo-mid);}
+
+/* Format guide */
+.format-guide{margin-top:32px;}
+.fg-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.fg-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.fg-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:20px;}
+.fg-card{background:var(--surface);border-radius:16px;padding:22px;box-shadow:var(--shadow-sm);border:1px solid var(--border);}
+.fg-card-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.fg-card-title .dot{width:8px;height:8px;border-radius:50%;}
+
+.col-table{width:100%;border-collapse:collapse;}
+.col-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;border-bottom:2px solid var(--border);}
+.col-table td{padding:9px 10px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle;}
+.col-table tr:last-child td{border-bottom:none;}
+.col-name{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:var(--indigo);background:var(--indigo-light);padding:3px 8px;border-radius:5px;white-space:nowrap;}
+
+.sample-table{width:100%;border-collapse:collapse;font-size:12px;}
+.sample-table th{padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:var(--surface2);border-bottom:2px solid var(--border);}
+.sample-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;color:var(--text);}
+.sample-table tr:last-child td{border-bottom:none;}
+.in-chip{color:var(--green);font-weight:700;background:var(--green-light);padding:2px 8px;border-radius:4px;}
+.out-chip{color:var(--rose);font-weight:700;background:var(--rose-light);padding:2px 8px;border-radius:4px;}
+
+.rules-list{display:flex;flex-direction:column;gap:9px;margin-top:4px;}
+.rule-item{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--muted);}
+.rule-icon{width:20px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;margin-top:1px;}
+
+/* ── STEPS NAV ── */
+.steps-nav{display:flex;gap:0;margin-bottom:28px;background:var(--surface);border-radius:12px;padding:6px;border:1px solid var(--border);box-shadow:var(--shadow-sm);width:fit-content;}
+.step-pill{font-size:12px;padding:7px 18px;border-radius:8px;color:var(--muted);font-weight:500;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.step-pill .snum{width:18px;height:18px;border-radius:50%;background:var(--border);color:var(--muted);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.step-pill.active{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;box-shadow:0 2px 8px rgba(79,70,229,0.3);}
+.step-pill.active .snum{background:rgba(255,255,255,0.25);color:#fff;}
+.step-pill.done{color:var(--green);background:var(--green-light);}
+.step-pill.done .snum{background:var(--green);color:#fff;}
+.step-arrow{color:var(--border2);font-size:16px;padding:0 2px;}
+
+/* ── PANEL ── */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;box-shadow:var(--shadow-sm);}
+.panel-title{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:4px;}
+.panel-sub{color:var(--muted);font-size:13px;margin-bottom:18px;line-height:1.5;}
+
+/* ── PERSON CARD ── */
+.person-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow 0.2s;}
+.person-card:hover{box-shadow:var(--shadow);}
+.person-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;user-select:none;transition:background 0.15s;}
+.person-header:hover{background:var(--surface2);}
+.person-avatar{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.person-name{font-weight:600;font-size:14px;flex:1;color:var(--text);}
+.person-empno{font-size:11px;color:var(--muted2);font-family:'JetBrains Mono',monospace;}
+.person-status{display:flex;gap:6px;}
+.person-chevron{color:var(--muted2);font-size:11px;transition:transform 0.2s;margin-left:4px;}
+.person-chevron.open{transform:rotate(90deg);}
+.person-body{display:none;padding:0 18px 18px;}
+.person-body.open{display:block;}
+
+/* ── PREV SAT ROW ── */
+.prev-sat-row{display:flex;align-items:center;gap:12px;padding:11px 16px;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:10px;margin-bottom:16px;}
+.prev-sat-row label{font-size:12px;color:#92400e;font-weight:600;min-width:200px;}
+
+/* ── DAY ROWS ── */
+.days-header{display:grid;grid-template-columns:100px 1fr 1fr 150px;gap:10px;padding:6px 0 10px;border-bottom:2px solid var(--border);margin-bottom:4px;}
+.days-header span{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted2);}
+.day-row{display:grid;grid-template-columns:100px 1fr 1fr 150px;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+.day-row:last-child{border-bottom:none;}
+.day-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--text);}
+.day-pill.sat{background:linear-gradient(135deg,#fffbeb,#fef3c7);border-color:#fde68a;color:#92400e;}
+.time-group{display:flex;flex-direction:column;gap:4px;}
+.time-group span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted2);}
+input[type="time"]{background:var(--surface2);border:1.5px solid var(--border);color:var(--text);border-radius:8px;padding:6px 10px;font-family:'JetBrains Mono',monospace;font-size:13px;width:118px;transition:border-color 0.15s,box-shadow 0.15s;}
+input[type="time"]:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px rgba(79,70,229,0.1);}
+input[type="time"].excused{opacity:0.3;pointer-events:none;}
+input[type="time"]:disabled{opacity:0.35;background:var(--border);}
+
+.day-actions{display:flex;flex-direction:column;gap:6px;}
+.excuse-btn{font-size:11px;padding:5px 11px;border-radius:7px;border:1.5px solid var(--border2);background:var(--surface);color:var(--muted);cursor:pointer;transition:all 0.15s;font-weight:500;white-space:nowrap;}
+.excuse-btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+.excuse-btn.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue);font-weight:600;}
+.absent-label{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:11px;color:var(--muted);font-weight:500;}
+.absent-label input{accent-color:var(--rose);width:13px;height:13px;}
+
+/* ── BUTTONS ── */
+.calc-btn{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;border:none;border-radius:10px;padding:14px 36px;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 14px rgba(79,70,229,0.3);letter-spacing:0.01em;}
+.calc-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,70,229,0.4);}
+.calc-btn:active{transform:translateY(0);}
+.reset-btn{background:var(--surface);border:1.5px solid var(--border2);color:var(--muted);border-radius:9px;padding:9px 20px;font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.reset-btn:hover{border-color:var(--rose);color:var(--rose);background:var(--rose-light);}
+
+/* ── RESULTS ── */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap;}
+.results-header h2{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;}
+.week-badge{font-size:12px;color:var(--indigo);font-family:'JetBrains Mono',monospace;background:var(--indigo-light);border:1px solid var(--indigo-mid);padding:5px 14px;border-radius:20px;font-weight:600;}
+
+.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{border-radius:16px;padding:22px 24px;position:relative;overflow:hidden;box-shadow:var(--shadow);}
+.stat-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;opacity:0.12;}
+.stat-card.orange{background:linear-gradient(135deg,#fff7ed,#ffedd5);border:1px solid #fed7aa;}
+.stat-card.orange::before{background:#f97316;}
+.stat-card.red{background:linear-gradient(135deg,#fff1f2,#ffe4e6);border:1px solid #fecdd3;}
+.stat-card.red::before{background:#f43f5e;}
+.stat-card.green{background:linear-gradient(135deg,#ecfdf5,#d1fae5);border:1px solid #a7f3d0;}
+.stat-card.green::before{background:#10b981;}
+.stat-card .s-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;margin-bottom:8px;}
+.stat-card.orange .s-label{color:#c2410c;}
+.stat-card.red .s-label{color:#be123c;}
+.stat-card.green .s-label{color:#065f46;}
+.stat-card .s-val{font-size:32px;font-weight:800;font-family:'JetBrains Mono',monospace;letter-spacing:-1px;}
+.stat-card.orange .s-val{color:#ea580c;}
+.stat-card.red .s-val{color:#e11d48;}
+.stat-card.green .s-val{color:#059669;}
+
+/* ── TABLE ── */
+.table-wrap{border-radius:14px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:linear-gradient(135deg,var(--indigo-light),var(--violet-light));}
+th{text-align:left;padding:12px 16px;color:var(--indigo);font-size:11px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;border-bottom:2px solid var(--indigo-mid);}
+td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle;background:var(--surface);}
+tr:last-child td{border-bottom:none;}
+tr.data-row:hover td{background:var(--surface2);cursor:pointer;}
+.name-cell{font-weight:700;font-size:13px;color:var(--text);}
+.emp-no{font-size:11px;color:var(--muted2);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+.fine-badge{display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;letter-spacing:0.02em;}
+.fine-0{background:var(--green-light);color:#059669;border:1px solid #a7f3d0;}
+.fine-300{background:var(--amber-light);color:#b45309;border:1px solid #fde68a;}
+.fine-600{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.fine-1200{background:var(--rose-light);color:#be123c;border:1px solid #fecdd3;}
+.fine-2000{background:#fdf2f8;color:#86198f;border:1px solid #f0abfc;}
+
+.mins-cell{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text);}
+.mins-unit{font-size:11px;color:var(--muted2);margin-left:2px;}
+
+.day-dots{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:5px;}
+.day-dot{font-size:10px;padding:3px 7px;border-radius:6px;font-family:'JetBrains Mono',monospace;white-space:nowrap;font-weight:600;}
+.dot-ok{background:var(--green-light);color:#059669;border:1px solid #a7f3d0;}
+.dot-late{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;}
+.dot-worst{background:var(--amber-light);color:#b45309;border:1px solid #fde68a;}
+.dot-absent{background:var(--surface2);color:var(--muted2);border:1px solid var(--border);}
+.dot-excused{background:var(--blue-light);color:#1d4ed8;border:1px solid #bfdbfe;}
+
+.expand-btn{background:none;border:none;color:var(--indigo);cursor:pointer;font-size:12px;font-weight:600;font-family:'Inter',sans-serif;padding:0;display:flex;align-items:center;gap:4px;}
+.expand-btn:hover{color:var(--violet);}
+
+.detail-row td{background:var(--surface2)!important;padding:0!important;}
+.detail-inner{display:none;padding:16px 20px;}
+.detail-inner.open{display:block;}
+.detail-table{width:100%;border-collapse:collapse;font-size:12px;}
+.detail-table th{text-align:left;padding:7px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);background:transparent;border-bottom:1px solid var(--border);}
+.detail-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-family:'JetBrains Mono',monospace;color:var(--text);font-size:12px;}
+.detail-table tr:last-child td{border-bottom:none;}
+
+.sat-note{background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:12px;padding:13px 18px;font-size:13px;color:#92400e;margin-bottom:20px;font-weight:500;}
+.sat-note strong{color:#78350f;}
+.hidden{display:none;}
+.section-title{font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--indigo-mid);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-mark">Travclan</div>
+    <div class="header-divider"></div>
+    <div class="header-title"><strong>Fine Calculator</strong> — Team Compass</div>
+    <div class="header-badge">📅 Weekly Attendance</div>
+  </div>
+</header>
+
+<div class="main">
+
+<!-- ══ STEP 1: UPLOAD ══ -->
+<div id="step-upload">
+  <div class="upload-hero">
+    <h2>Upload this week's attendance sheet</h2>
+    <p>Drop your Excel file and the calculator handles everything — <span class="highlight">buffers, excuses, carry-forwards</span></p>
+  </div>
+
+  <div class="upload-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".xlsx,.xls" />
+    <div class="upload-icon-wrap">📊</div>
+    <h3>Drag & drop your file here</h3>
+    <p>or click anywhere in this box to browse</p>
+    <div class="file-types">
+      <span class="file-chip">.xlsx</span>
+      <span class="file-chip">.xls</span>
+    </div>
+  </div>
+
+  <div class="format-guide">
+    <div class="fg-title">Required File Format</div>
+    <div class="fg-grid">
+
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="fg-card">
+          <div class="fg-card-title" style="color:var(--indigo);">
+            <div class="dot" style="background:var(--indigo);"></div> Required Column Names
+          </div>
+          <table class="col-table">
+            <thead><tr><th>Column</th><th>What it contains</th></tr></thead>
+            <tbody>
+              <tr><td><span class="col-name">Employee No</span></td><td style="color:var(--muted);font-size:13px;">Unique employee ID <span style="color:var(--muted2);">(e.g. 100866)</span></td></tr>
+              <tr><td><span class="col-name">Employee Name</span></td><td style="color:var(--muted);font-size:13px;">Full name of the team member</td></tr>
+              <tr><td><span class="col-name">Swipe Date</span></td><td style="color:var(--muted);font-size:13px;">Date + time <span style="color:var(--muted2);">(13 Jun 2026 09:45:00)</span></td></tr>
+              <tr><td><span class="col-name">In/Out</span></td><td style="color:var(--muted);font-size:13px;"><span class="in-chip">In</span> or <span class="out-chip">Out</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="fg-card">
+          <div class="fg-card-title" style="color:var(--rose);">
+            <div class="dot" style="background:var(--rose);"></div> Things to keep in mind
+          </div>
+          <div class="rules-list">
+            <div class="rule-item"><div class="rule-icon" style="background:var(--indigo-light);color:var(--indigo);">→</div> 2 rows per person per day — one In, one Out</div>
+            <div class="rule-item"><div class="rule-icon" style="background:var(--indigo-light);color:var(--indigo);">→</div> Max 12 rows per person per week (Mon–Sat)</div>
+            <div class="rule-item"><div class="rule-icon" style="background:var(--amber-light);color:var(--amber);">→</div> Missing punch-out defaults to 8:00 PM</div>
+            <div class="rule-item"><div class="rule-icon" style="background:var(--rose-light);color:var(--rose);">→</div> Column names must match exactly (case-sensitive)</div>
+            <div class="rule-item"><div class="rule-icon" style="background:var(--green-light);color:var(--green);">→</div> Office hours: In 9:30 AM · Out 8:00 PM</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fg-card">
+        <div class="fg-card-title" style="color:var(--green);">
+          <div class="dot" style="background:var(--green);"></div> Example Data
+        </div>
+        <table class="sample-table">
+          <thead><tr><th>Employee No</th><th>Employee Name</th><th>Swipe Date</th><th>In/Out</th></tr></thead>
+          <tbody>
+            <tr><td style="color:var(--muted2);">100866</td><td>Rahul Saini</td><td>09 Jun 2026 09:42:00</td><td><span class="in-chip">In</span></td></tr>
+            <tr><td style="color:var(--muted2);">100866</td><td>Rahul Saini</td><td>09 Jun 2026 20:15:00</td><td><span class="out-chip">Out</span></td></tr>
+            <tr><td style="color:var(--muted2);">200720</td><td>Priya Sharma</td><td>09 Jun 2026 10:05:00</td><td><span class="in-chip">In</span></td></tr>
+            <tr><td style="color:var(--muted2);">200720</td><td>Priya Sharma</td><td>09 Jun 2026 19:50:00</td><td><span class="out-chip">Out</span></td></tr>
+            <tr><td style="color:var(--muted2);">300441</td><td>Ananya Gupta</td><td>10 Jun 2026 09:28:00</td><td><span class="in-chip">In</span></td></tr>
+            <tr><td style="color:var(--muted2);">300441</td><td>Ananya Gupta</td><td>10 Jun 2026 20:45:00</td><td><span class="out-chip">Out</span></td></tr>
+            <tr><td style="color:var(--muted2);">400512</td><td>Vikram Mehta</td><td>11 Jun 2026 11:20:00</td><td><span class="in-chip">In</span></td></tr>
+            <tr><td style="color:var(--muted2);">400512</td><td>Vikram Mehta</td><td>11 Jun 2026 20:00:00</td><td><span class="out-chip">Out</span></td></tr>
+          </tbody>
+        </table>
+        <div style="margin-top:14px;padding:10px 14px;background:var(--indigo-light);border-radius:8px;border:1px solid var(--indigo-mid);">
+          <div style="font-size:11px;font-weight:700;color:var(--indigo);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.07em;">Fine Slabs</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:11px;background:var(--green-light);color:#059669;border:1px solid #a7f3d0;padding:2px 9px;border-radius:12px;font-weight:600;">0–45 min → ₹0</span>
+            <span style="font-size:11px;background:var(--amber-light);color:#b45309;border:1px solid #fde68a;padding:2px 9px;border-radius:12px;font-weight:600;">46–90 → ₹300</span>
+            <span style="font-size:11px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;padding:2px 9px;border-radius:12px;font-weight:600;">91–120 → ₹600</span>
+            <span style="font-size:11px;background:var(--rose-light);color:#be123c;border:1px solid #fecdd3;padding:2px 9px;border-radius:12px;font-weight:600;">121–160 → ₹1200</span>
+            <span style="font-size:11px;background:#fdf2f8;color:#86198f;border:1px solid #f0abfc;padding:2px 9px;border-radius:12px;font-weight:600;">161+ → ₹2000</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══ STEP 2: REVIEW ══ -->
+<div id="step-manual" class="hidden">
+  <div class="steps-nav">
+    <div class="step-pill done"><div class="snum">✓</div> Upload</div>
+    <div class="step-arrow">›</div>
+    <div class="step-pill active"><div class="snum">2</div> Review Timings</div>
+    <div class="step-arrow">›</div>
+    <div class="step-pill"><div class="snum">3</div> Results</div>
+  </div>
+  <div class="panel">
+    <div class="panel-title">Review & Edit Attendance</div>
+    <div class="panel-sub">All times are editable. Use <strong>Approved Excuse</strong> to waive a day's punch-in. Mark <strong>Absent</strong> to exclude a day entirely.</div>
+    <div id="personCards"></div>
+  </div>
+  <button class="calc-btn" onclick="runCalculation()">Calculate Fines →</button>
+</div>
+
+<!-- ══ STEP 3: RESULTS ══ -->
+<div id="step-results" class="hidden">
+  <div class="steps-nav">
+    <div class="step-pill done"><div class="snum">✓</div> Upload</div>
+    <div class="step-arrow">›</div>
+    <div class="step-pill done"><div class="snum">✓</div> Review Timings</div>
+    <div class="step-arrow">›</div>
+    <div class="step-pill active"><div class="snum">3</div> Results</div>
+  </div>
+  <div class="results-header">
+    <h2>Fine Report</h2>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <div class="week-badge" id="weekBadge"></div>
+      <button class="reset-btn" onclick="resetAll()">← New Week</button>
+    </div>
+  </div>
+  <div class="sat-note hidden" id="satCarryNote"></div>
+  <div class="summary-row">
+    <div class="stat-card orange"><div class="s-label">Total Fine Collected</div><div class="s-val" id="totalFine">₹0</div></div>
+    <div class="stat-card red"><div class="s-label">Members Fined</div><div class="s-val" id="membersFined">0</div></div>
+    <div class="stat-card green"><div class="s-label">Clean Week</div><div class="s-val" id="cleanCount">0</div></div>
+  </div>
+  <div class="panel">
+    <div class="section-title">Individual Breakdown</div>
+    <div class="table-wrap">
+      <table id="resultsTable">
+        <thead><tr><th>Employee</th><th>Raw Late</th><th>Buffer Used</th><th>Net Late</th><th>Fine</th><th>Days</th></tr></thead>
+        <tbody id="resultsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div><!-- /.main -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const PUNCH_IN_MINS=9*60+30,PUNCH_OUT_MINS=20*60,BUFFER_WEEK=45,BUFFER_11AM=90;
+const DAY_NAMES=['Mon','Tue','Wed','Thu','Fri','Sat'];
+let parsedData={},weekDates=[],satDate=null,prevSatDate=null;
+
+const toMins=(h,m)=>h*60+m;
+const dateKey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const fmtTime=(h,m)=>String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+function dayLabel(dkey){const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];const d=new Date(dkey+'T12:00:00');return days[d.getDay()]+' '+String(d.getDate()).padStart(2,'0');}
+function fineAmount(n){if(n<=45)return 0;if(n<=90)return 300;if(n<=120)return 600;if(n<=160)return 1200;return 2000;}
+function fineClass(f){return 'fine-'+f;}
+function initials(name){return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+
+document.getElementById('fileInput').addEventListener('change',e=>handleFile(e.target.files[0]));
+const dz=document.getElementById('dropZone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');handleFile(e.dataTransfer.files[0]);});
+
+function handleFile(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const wb=XLSX.read(e.target.result,{type:'array',cellDates:true});
+    const ws=wb.Sheets[wb.SheetNames[0]];
+    const rows=XLSX.utils.sheet_to_json(ws,{raw:false});
+    processRows(rows);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function processRows(rows){
+  parsedData={};const allDates=new Set();
+  rows.forEach(row=>{
+    const empNo=String(row['Employee No']||'').trim();
+    const name=String(row['Employee Name']||'').trim();
+    const swipeStr=String(row['Swipe Date']||'').trim();
+    const inOut=String(row['In/Out']||'').trim();
+    if(!empNo||!name||!swipeStr)return;
+    let dt=new Date(swipeStr);
+    if(isNaN(dt.getTime())){const m=swipeStr.match(/(\d+)\s+(\w+)\s+(\d+)\s+(\d+):(\d+):(\d+)/);if(m)dt=new Date(`${m[2]} ${m[1]}, ${m[3]} ${m[4]}:${m[5]}:${m[6]}`);}
+    if(isNaN(dt.getTime()))return;
+    const dkey=dateKey(dt);allDates.add(dkey);
+    if(!parsedData[empNo])parsedData[empNo]={name,days:{}};
+    if(!parsedData[empNo].days[dkey])parsedData[empNo].days[dkey]={inH:null,inM:null,outH:null,outM:null};
+    const d=parsedData[empNo].days[dkey];const h=dt.getHours(),mi=dt.getMinutes();
+    if(inOut==='In'){if(d.inH===null||toMins(h,mi)>toMins(d.inH,d.inM)){d.inH=h;d.inM=mi;}}
+    else{if(d.outH===null||toMins(h,mi)>toMins(d.outH,d.outM)){d.outH=h;d.outM=mi;}}
+  });
+  const sorted=[...allDates].sort();
+  const firstDate=new Date(sorted[0]+'T12:00:00');
+  const dow=firstDate.getDay();const diffToMon=(dow===0)?-6:1-dow;
+  const monday=new Date(firstDate);monday.setDate(monday.getDate()+diffToMon);
+  weekDates=[];
+  for(let i=0;i<6;i++){const d=new Date(monday);d.setDate(monday.getDate()+i);weekDates.push(dateKey(d));}
+  satDate=weekDates[5];
+  const prevSat=new Date(monday);prevSat.setDate(monday.getDate()-1);prevSatDate=dateKey(prevSat);
+  buildReviewUI();
+}
+
+const AVATAR_COLORS=[
+  'linear-gradient(135deg,#4f46e5,#7c3aed)',
+  'linear-gradient(135deg,#0891b2,#0e7490)',
+  'linear-gradient(135deg,#059669,#047857)',
+  'linear-gradient(135deg,#d97706,#b45309)',
+  'linear-gradient(135deg,#db2777,#be185d)',
+  'linear-gradient(135deg,#7c3aed,#6d28d9)',
+  'linear-gradient(135deg,#0284c7,#0369a1)',
+  'linear-gradient(135deg,#16a34a,#15803d)',
+];
+
+function buildReviewUI(){
+  document.getElementById('step-upload').classList.add('hidden');
+  document.getElementById('step-manual').classList.remove('hidden');
+  const container=document.getElementById('personCards');container.innerHTML='';
+  Object.entries(parsedData).sort((a,b)=>a[1].name.localeCompare(b[1].name)).forEach(([empNo,emp],idx)=>{
+    const card=document.createElement('div');card.className='person-card';card.id='card_'+empNo;
+    let dayRowsHTML=`
+      <div class="prev-sat-row">
+        <label>⏮ Last Saturday (${dayLabel(prevSatDate)}) Punch-Out</label>
+        <div class="time-group"><span>Punch Out</span><input type="time" id="prevsat_${empNo}" value="" /></div>
+        <span style="font-size:12px;color:#92400e;font-weight:500;">Extra time → added as Monday buffer</span>
+      </div>
+      <div class="days-header">
+        <span>Day</span><span>Punch In</span><span>Punch Out</span><span>Options</span>
+      </div>`;
+    weekDates.forEach((dkey,di)=>{
+      const d=emp.days[dkey]||{};
+      const isAbsent=!d.inH&&!d.outH;const isSat=di===5;
+      const dayName=DAY_NAMES[di]+' '+dkey.slice(8);
+      const inVal=d.inH!==null?fmtTime(d.inH,d.inM):'09:30';
+      const outVal=d.outH!==null?fmtTime(d.outH,d.outM):'20:00';
+      const satNote=isSat?'<span style="font-size:10px;color:#92400e;font-weight:500;display:block;margin-top:2px;">Out → next week</span>':'';
+      dayRowsHTML+=`
+        <div class="day-row" id="dayrow_${empNo}_${dkey}">
+          <div><div class="day-pill ${isSat?'sat':''}">${dayName}</div>${satNote}</div>
+          <div class="time-group"><span>Punch In</span><input type="time" id="in_${empNo}_${dkey}" value="${inVal}" ${isAbsent?'disabled':''} /></div>
+          <div class="time-group"><span>Punch Out</span><input type="time" id="out_${empNo}_${dkey}" value="${outVal}" ${isAbsent?'disabled':''} /></div>
+          <div class="day-actions">
+            <button class="excuse-btn" id="excuse_${empNo}_${dkey}" onclick="toggleExcuse('${empNo}','${dkey}')" ${isAbsent?'disabled style="opacity:0.3"':''}>✓ Approved Excuse</button>
+            <label class="absent-label"><input type="checkbox" class="absent-check" id="absent_${empNo}_${dkey}" onchange="toggleAbsent('${empNo}','${dkey}')" ${isAbsent?'checked':''} /> Absent / No data</label>
+          </div>
+        </div>`;
+    });
+    const avatarColor=AVATAR_COLORS[idx%AVATAR_COLORS.length];
+    card.innerHTML=`
+      <div class="person-header" onclick="toggleCard('${empNo}')">
+        <div class="person-avatar" style="background:${avatarColor};">${initials(emp.name)}</div>
+        <div style="flex:1;"><div class="person-name">${emp.name}</div><div class="person-empno">#${empNo}</div></div>
+        <span class="person-chevron" id="chev_${empNo}">▶</span>
+      </div>
+      <div class="person-body" id="body_${empNo}">${dayRowsHTML}</div>`;
+    container.appendChild(card);
+  });
+}
+
+function toggleCard(empNo){const body=document.getElementById('body_'+empNo);const chev=document.getElementById('chev_'+empNo);const open=body.classList.toggle('open');chev.classList.toggle('open',open);chev.textContent=open?'▼':'▶';}
+function toggleExcuse(empNo,dkey){const btn=document.getElementById(`excuse_${empNo}_${dkey}`);const inEl=document.getElementById(`in_${empNo}_${dkey}`);const active=btn.classList.toggle('active');inEl.classList.toggle('excused',active);btn.textContent=active?'★ Excused':'✓ Approved Excuse';}
+function toggleAbsent(empNo,dkey){const chk=document.getElementById(`absent_${empNo}_${dkey}`);const inEl=document.getElementById(`in_${empNo}_${dkey}`);const outEl=document.getElementById(`out_${empNo}_${dkey}`);const excuseBtn=document.getElementById(`excuse_${empNo}_${dkey}`);const absent=chk.checked;inEl.disabled=absent;outEl.disabled=absent;if(absent){excuseBtn.disabled=true;excuseBtn.style.opacity='0.3';excuseBtn.classList.remove('active');inEl.classList.remove('excused');}else{excuseBtn.disabled=false;excuseBtn.style.opacity='';}}
+
+function runCalculation(){
+  const results=[];const satCarryLines=[];
+  Object.entries(parsedData).forEach(([empNo,emp])=>{
+    const prevSatEl=document.getElementById(`prevsat_${empNo}`);
+    let prevSatCarry=0;
+    if(prevSatEl&&prevSatEl.value){const[h,m]=prevSatEl.value.split(':').map(Number);prevSatCarry=Math.max(0,toMins(h,m)-PUNCH_OUT_MINS);}
+    const dayData={};
+    weekDates.forEach((dkey,di)=>{
+      const isSat=di===5;
+      const absentEl=document.getElementById(`absent_${empNo}_${dkey}`);
+      if(absentEl&&absentEl.checked){dayData[dkey]={present:false,lateMins:0,extraOut:0,excused:false};return;}
+      const inEl=document.getElementById(`in_${empNo}_${dkey}`);
+      const outEl=document.getElementById(`out_${empNo}_${dkey}`);
+      const excuseEl=document.getElementById(`excuse_${empNo}_${dkey}`);
+      const excused=excuseEl&&excuseEl.classList.contains('active');
+      const[inH,inM]=(inEl?inEl.value:'09:30').split(':').map(Number);
+      const[outH,outM]=(outEl?outEl.value:'20:00').split(':').map(Number);
+      const lateMins=excused?0:Math.max(0,toMins(inH,inM)-PUNCH_IN_MINS);
+      const extraOut=isSat?0:Math.max(0,toMins(outH,outM)-PUNCH_OUT_MINS);
+      dayData[dkey]={present:true,lateMins,extraOut,excused,inH,inM,outH,outM};
+    });
+    const monKey=weekDates[0];
+    if(prevSatCarry>0&&dayData[monKey]?.present){dayData[monKey].lateMins=Math.max(0,dayData[monKey].lateMins-prevSatCarry);dayData[monKey].prevSatBuf=prevSatCarry;}
+    for(let i=1;i<weekDates.length-1;i++){
+      const prev=weekDates[i-1],curr=weekDates[i];
+      const extra=dayData[prev]?.extraOut||0;
+      if(extra>0&&dayData[curr]?.present){dayData[curr].lateMins=Math.max(0,dayData[curr].lateMins-extra);dayData[curr].carryBuf=extra;}
+    }
+    const satDay=dayData[satDate];
+    if(satDay?.present){const satOutEl=document.getElementById(`out_${empNo}_${satDate}`);if(satOutEl){const[sh,sm]=satOutEl.value.split(':').map(Number);const satExtra=Math.max(0,toMins(sh,sm)-PUNCH_OUT_MINS);if(satExtra>0){emp.satCarry=satExtra;satCarryLines.push(`${emp.name}: +${satExtra} mins → Mon`);}}}
+    const presentDays=weekDates.filter(d=>dayData[d]?.present);
+    if(!presentDays.length){results.push({empNo,name:emp.name,dayData,rawTotal:0,bufferUsed:0,netMins:0,fine:0,worstDay:null});return;}
+    const worstDay=presentDays.reduce((a,b)=>dayData[a].lateMins>=dayData[b].lateMins?a:b);
+    const worstRaw=dayData[worstDay].lateMins;
+    const worstAfter=Math.min(worstRaw,BUFFER_11AM);
+    const worstBufUsed=worstRaw-worstAfter;
+    let otherRaw=0;presentDays.forEach(d=>{if(d!==worstDay)otherRaw+=dayData[d].lateMins;});
+    const otherBufUsed=Math.min(otherRaw,BUFFER_WEEK);
+    const otherNet=Math.max(0,otherRaw-BUFFER_WEEK);
+    const rawTotal=presentDays.reduce((s,d)=>s+dayData[d].lateMins,0);
+    const netMins=worstAfter+otherNet;
+    const bufferUsed=worstBufUsed+otherBufUsed;
+    const fine=fineAmount(netMins);
+    results.push({empNo,name:emp.name,dayData,rawTotal,bufferUsed,netMins,fine,worstDay});
+  });
+  renderResults(results,satCarryLines);
+}
+
+function renderResults(results,satCarryLines){
+  document.getElementById('step-manual').classList.add('hidden');
+  document.getElementById('step-results').classList.remove('hidden');
+  const d0=new Date(weekDates[0]+'T12:00:00'),d5=new Date(satDate+'T12:00:00');
+  const fmt=d=>d.getDate()+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()];
+  document.getElementById('weekBadge').textContent=fmt(d0)+' – '+fmt(d5)+' '+d5.getFullYear();
+  const satNote=document.getElementById('satCarryNote');
+  if(satCarryLines.length){satNote.innerHTML='<strong>⏱ Sat Carry → Next Monday:</strong> '+satCarryLines.join(' &nbsp;·&nbsp; ');satNote.classList.remove('hidden');}
+  else satNote.classList.add('hidden');
+  results.sort((a,b)=>b.fine-a.fine||b.netMins-a.netMins);
+  document.getElementById('totalFine').textContent='₹'+results.reduce((s,r)=>s+r.fine,0).toLocaleString('en-IN');
+  document.getElementById('membersFined').textContent=results.filter(r=>r.fine>0).length;
+  document.getElementById('cleanCount').textContent=results.filter(r=>r.fine===0).length;
+  const tbody=document.getElementById('resultsBody');tbody.innerHTML='';
+  results.forEach((r,idx)=>{
+    const avatarColor=AVATAR_COLORS[idx%AVATAR_COLORS.length];
+    const tr=document.createElement('tr');tr.className='data-row';tr.onclick=()=>toggleDetail(idx);
+    const dots=weekDates.map((dkey,di)=>{
+      const d=r.dayData[dkey];const label=DAY_NAMES[di]+' '+dkey.slice(8);
+      if(!d||!d.present)return`<span class="day-dot dot-absent">${label}</span>`;
+      if(d.excused)return`<span class="day-dot dot-excused">${label} ✓</span>`;
+      const isWorst=dkey===r.worstDay;
+      return`<span class="day-dot ${isWorst?'dot-worst':d.lateMins>0?'dot-late':'dot-ok'}">${label}</span>`;
+    }).join('');
+    tr.innerHTML=`
+      <td><div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:30px;height:30px;border-radius:8px;background:${avatarColor};color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${initials(r.name)}</div>
+        <div><div class="name-cell">${r.name}</div><div class="emp-no">#${r.empNo}</div></div>
+      </div></td>
+      <td><span class="mins-cell">${r.rawTotal}<span class="mins-unit">m</span></span></td>
+      <td><span style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;">-${r.bufferUsed}<span class="mins-unit">m</span></span></td>
+      <td><span class="mins-cell" style="font-weight:700;">${r.netMins}<span class="mins-unit">m</span></span></td>
+      <td><span class="fine-badge ${fineClass(r.fine)}">${r.fine===0?'✓ ₹0':'₹'+r.fine}</span></td>
+      <td><div class="day-dots">${dots}</div><button class="expand-btn" id="expbtn_${idx}">▸ Details</button></td>`;
+    tbody.appendChild(tr);
+    const detailTr=document.createElement('tr');detailTr.className='detail-row';
+    const detailRows=weekDates.map((dkey,di)=>{
+      const d=r.dayData[dkey];const label=DAY_NAMES[di]+' '+dkey.slice(8);
+      if(!d||!d.present)return`<tr><td>${label}</td><td colspan="5" style="color:var(--muted2);">Absent / No data</td></tr>`;
+      const isWorst=dkey===r.worstDay;
+      const carry=d.carryBuf?`-${d.carryBuf}m carry`:(d.prevSatBuf?`-${d.prevSatBuf}m sat carry`:'—');
+      const note=d.excused?`<span style="color:var(--blue);font-weight:600;">★ Approved Excuse</span>`:(isWorst?`<span style="color:var(--amber);font-weight:600;">★ 11AM buffer</span>`:'—');
+      return`<tr><td>${label}</td><td>${d.inH!==null?fmtTime(d.inH,d.inM):'—'}</td><td>${d.outH!==null?fmtTime(d.outH,d.outM):'—'}</td><td style="color:${d.lateMins>0?'#c2410c':'#059669'};font-weight:600;">${d.lateMins}m late</td><td>${note}</td><td style="color:var(--blue);">${carry}</td></tr>`;
+    }).join('');
+    detailTr.innerHTML=`<td colspan="6"><div class="detail-inner" id="detail_${idx}"><table class="detail-table"><thead><tr><th>Day</th><th>In</th><th>Out</th><th>Late</th><th>Note</th><th>Carry</th></tr></thead><tbody>${detailRows}</tbody></table></div></td>`;
+    tbody.appendChild(detailTr);
+  });
+}
+
+function toggleDetail(idx){const div=document.getElementById('detail_'+idx);const btn=document.getElementById('expbtn_'+idx);const open=div.classList.toggle('open');btn.textContent=open?'▾ Details':'▸ Details';}
+function resetAll(){parsedData={};weekDates=[];satDate=null;prevSatDate=null;document.getElementById('step-upload').classList.remove('hidden');document.getElementById('step-manual').classList.add('hidden');document.getElementById('step-results').classList.add('hidden');document.getElementById('fileInput').value='';}
+</script>
+</body>
+</html>
