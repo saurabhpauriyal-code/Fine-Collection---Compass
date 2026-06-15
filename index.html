@@ -526,12 +526,26 @@ function runCalculation(){
       const extraOut=isSat?0:Math.max(0,toMins(outH,outM)-PUNCH_OUT_MINS);
       dayData[dkey]={present:true,lateMins,extraOut,excused,inH,inM,outH,outM};
     });
-    const monKey=weekDates[0];
-    if(prevSatCarry>0&&dayData[monKey]?.present){dayData[monKey].lateMins=Math.max(0,dayData[monKey].lateMins-prevSatCarry);dayData[monKey].prevSatBuf=prevSatCarry;}
-    for(let i=1;i<weekDates.length-1;i++){
-      const prev=weekDates[i-1],curr=weekDates[i];
-      const extra=dayData[prev]?.extraOut||0;
-      if(extra>0&&dayData[curr]?.present){dayData[curr].lateMins=Math.max(0,dayData[curr].lateMins-extra);dayData[curr].carryBuf=extra;}
+    // Prev-Sat carry → first present day of the week (skip absent)
+    if(prevSatCarry>0){
+      const firstPresent=weekDates.find(d=>dayData[d]?.present);
+      if(firstPresent){dayData[firstPresent].lateMins=Math.max(0,dayData[firstPresent].lateMins-prevSatCarry);dayData[firstPresent].prevSatBuf=prevSatCarry;}
+    }
+    // Daily carry-forward: skip absent days, land on next present day
+    for(let i=0;i<weekDates.length-1;i++){
+      const curr=weekDates[i];
+      const extra=dayData[curr]?.extraOut||0;
+      if(extra>0){
+        for(let j=i+1;j<weekDates.length;j++){
+          const next=weekDates[j];
+          if(dayData[next]?.present){
+            dayData[next].lateMins=Math.max(0,dayData[next].lateMins-extra);
+            dayData[next].carryBuf=(dayData[next].carryBuf||0)+extra;
+            dayData[next].carryFrom=curr;
+            break;
+          }
+        }
+      }
     }
     const satDay=dayData[satDate];
     if(satDay?.present){const satOutEl=document.getElementById(`out_${empNo}_${satDate}`);if(satOutEl){const[sh,sm]=satOutEl.value.split(':').map(Number);const satExtra=Math.max(0,toMins(sh,sm)-PUNCH_OUT_MINS);if(satExtra>0){emp.satCarry=satExtra;satCarryLines.push(`${emp.name}: +${satExtra} mins → Mon`);}}}
@@ -593,7 +607,7 @@ function renderResults(results,satCarryLines){
       const d=r.dayData[dkey];const label=DAY_NAMES[di]+' '+dkey.slice(8);
       if(!d||!d.present)return`<tr><td>${label}</td><td colspan="5" style="color:var(--muted2);">Absent / No data</td></tr>`;
       const isWorst=dkey===r.worstDay;
-      const carry=d.carryBuf?`-${d.carryBuf}m carry`:(d.prevSatBuf?`-${d.prevSatBuf}m sat carry`:'—');
+      const carryFrom=d.carryFrom?(' from '+dayLabel(d.carryFrom)):'';const carry=d.prevSatBuf?`-${d.prevSatBuf}m (prev Sat)`:(d.carryBuf?`-${d.carryBuf}m carry${carryFrom}`:'—');
       const note=d.excused?`<span style="color:var(--blue);font-weight:600;">★ Approved Excuse</span>`:(isWorst?`<span style="color:var(--amber);font-weight:600;">★ 11AM buffer</span>`:'—');
       return`<tr><td>${label}</td><td>${d.inH!==null?fmtTime(d.inH,d.inM):'—'}</td><td>${d.outH!==null?fmtTime(d.outH,d.outM):'—'}</td><td style="color:${d.lateMins>0?'#c2410c':'#059669'};font-weight:600;">${d.lateMins}m late</td><td>${note}</td><td style="color:var(--blue);">${carry}</td></tr>`;
     }).join('');
