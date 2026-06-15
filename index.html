@@ -353,7 +353,7 @@ tr.data-row:hover td{background:var(--surface2);cursor:pointer;}
   <div class="steps-nav">
     <div class="step-pill done"><div class="snum">✓</div> Upload</div>
     <div class="step-arrow">›</div>
-    <div class="step-pill done"><div class="snum">✓</div> Review Timings</div>
+    <div class="step-pill done" onclick="goBackToReview()" style="cursor:pointer;" title="Click to go back and edit timings"><div class="snum">✓</div> Review Timings</div>
     <div class="step-arrow">›</div>
     <div class="step-pill active"><div class="snum">3</div> Results</div>
   </div>
@@ -361,7 +361,8 @@ tr.data-row:hover td{background:var(--surface2);cursor:pointer;}
     <h2>Fine Report</h2>
     <div style="display:flex;gap:10px;align-items:center;">
       <div class="week-badge" id="weekBadge"></div>
-      <button class="reset-btn" onclick="resetAll()">← New Week</button>
+      <button class="reset-btn" onclick="goBackToReview()" style="border-color:var(--indigo-mid);color:var(--indigo);background:var(--indigo-light);">← Edit Timings</button>
+      <button class="reset-btn" onclick="resetAll()">↺ New Week</button>
     </div>
   </div>
   <div class="sat-note hidden" id="satCarryNote"></div>
@@ -602,6 +603,7 @@ function renderResults(results,satCarryLines){
 }
 
 function toggleDetail(idx){const div=document.getElementById('detail_'+idx);const btn=document.getElementById('expbtn_'+idx);const open=div.classList.toggle('open');btn.textContent=open?'▾ Details':'▸ Details';}
+function goBackToReview(){document.getElementById('step-results').classList.add('hidden');document.getElementById('step-manual').classList.remove('hidden');}
 function resetAll(){parsedData={};weekDates=[];satDate=null;prevSatDate=null;document.getElementById('step-upload').classList.remove('hidden');document.getElementById('step-manual').classList.add('hidden');document.getElementById('step-results').classList.add('hidden');document.getElementById('fileInput').value='';}
 </script>
 </body>
